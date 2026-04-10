@@ -1,0 +1,36 @@
+services:
+  # Nginx como balanceador y caché
+  nginx_proxy:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - cache_data:/var/cache/nginx
+    depends_on:
+      - apache1
+      - apache2
+    networks:
+      - red-backend
+
+  # Servidor Apache A
+  apache1:
+    image: httpd:latest
+    volumes:
+      - ./html:/usr/local/apache2/htdocs/
+    networks:
+      - red-backend
+
+  # Servidor Apache B
+  apache2:
+    image: httpd:latest
+    volumes:
+      - ./html:/usr/local/apache2/htdocs/
+    networks:
+      - red-backend
+
+networks:
+  red-backend:
+
+volumes:
+  cache_data:
